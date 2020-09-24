@@ -1,9 +1,21 @@
-machine:
-  java:
-    version: oraclejdk8
+  
+version: 2.1
 
-deployment:
-  staging:
-    branch: master
-    heroku: 
-      appname: appweblab6cvds
+workflows:
+  build-deploy:
+    jobs:
+      - build-deploy
+
+jobs:
+  build-deploy:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build and push Docker image to Heroku
+          command: |
+            set -x
+            sudo curl https://cli-assets.heroku.com/install.sh | sh
+            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:login
+            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:push -a appweblab6cvds web
+            HEROKU_API_KEY=${HEROKU_API_KEY} heroku container:release -a appweblab6cvds web
